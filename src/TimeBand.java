@@ -1,7 +1,3 @@
-/**
- * Whether a journey takes place during peak or off-peak hours.
- * Peak journeys cost more than off-peak journeys.
- */
 public enum TimeBand {
 
     PEAK    ("Peak"),
@@ -15,10 +11,6 @@ public enum TimeBand {
 
     public String getDisplayName() { return displayName; }
 
-    /**
-     * Converts user text input to the correct TimeBand.
-     * Returns null if the input does not match, so the caller can show an error.
-     */
     public static TimeBand fromString(String input) {
         if (input == null) {
             return null;

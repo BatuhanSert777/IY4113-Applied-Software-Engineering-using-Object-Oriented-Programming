@@ -6,15 +6,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Saves and loads the rider's journey list to a JSON file (FR5).
- * Each rider's journeys are stored in: data/journeys/<RiderName>.json
- *
- * A plain JourneyData holder is used so Gson does not need to reconstruct
- * the Journey object directly (Journey has a final journeyId field).
- * Fares stored in the file are the already-calculated values — no
- * recalculation is done on load.
- */
 public class JourneyStore {
 
     private static final String JOURNEYS_FOLDER = "data/journeys/";
@@ -25,29 +16,24 @@ public class JourneyStore {
         this.gson = new GsonBuilder().setPrettyPrinting().create();
     }
 
-    /**
-     * Saves the rider's journeys to their JSON file.
-     * Creates the data/journeys folder if it does not exist.
-     * Returns true if saved successfully.
-     */
     public boolean saveJourneys(List<Journey> journeys, String riderName) {
         new File(JOURNEYS_FOLDER).mkdirs();
         String filePath = buildFilePath(riderName);
 
         List<JourneyData> dataList = new ArrayList<>();
         for (Journey j : journeys) {
-            JourneyData d      = new JourneyData();
-            d.journeyId        = j.getJourneyId();
-            d.date             = j.getDate();
-            d.time             = j.getTime();
-            d.fromZone         = j.getFromZone();
-            d.toZone           = j.getToZone();
-            d.passengerType    = j.getPassengerType().name();
-            d.timeBand         = j.getTimeBand().name();
-            d.paymentOption    = j.getPaymentOption().name();
-            d.baseFare         = j.getBaseFare();
-            d.discountedFare   = j.getDiscountedFare();
-            d.chargedFare      = j.getChargedFare();
+            JourneyData d    = new JourneyData();
+            d.journeyId      = j.getJourneyId();
+            d.date           = j.getDate();
+            d.time           = j.getTime();
+            d.fromZone       = j.getFromZone();
+            d.toZone         = j.getToZone();
+            d.passengerType  = j.getPassengerType().name();
+            d.timeBand       = j.getTimeBand().name();
+            d.paymentOption  = j.getPaymentOption().name();
+            d.baseFare       = j.getBaseFare();
+            d.discountedFare = j.getDiscountedFare();
+            d.chargedFare    = j.getChargedFare();
             dataList.add(d);
         }
 
@@ -64,10 +50,6 @@ public class JourneyStore {
         return saved;
     }
 
-    /**
-     * Loads the rider's saved journeys from their JSON file.
-     * Returns an empty list if the file does not exist or cannot be read.
-     */
     public List<Journey> loadJourneys(String riderName) {
         String filePath = buildFilePath(riderName);
         List<Journey> journeys = new ArrayList<>();
@@ -92,7 +74,7 @@ public class JourneyStore {
             }
 
         } catch (IOException e) {
-            // No saved file — normal for a new rider
+            // No saved file — normal for a first-time session
         } catch (Exception e) {
             System.out.println("Warning: Could not load saved journeys. " + e.getMessage());
         }
@@ -100,16 +82,11 @@ public class JourneyStore {
         return journeys;
     }
 
-    /** Builds the file path for a rider's journey JSON file. */
     private String buildFilePath(String riderName) {
         String safeName = riderName.trim().replace(" ", "_");
         return JOURNEYS_FOLDER + safeName + ".json";
     }
 
-    /**
-     * Plain data holder used for JSON serialisation.
-     * Avoids Gson issues with final fields in Journey.
-     */
     private static class JourneyData {
         int    journeyId;
         String date;

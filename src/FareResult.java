@@ -1,12 +1,3 @@
-/**
- * Holds the three fare values produced by FareCalculator for one journey.
- *
- * baseFare       — the standard fare before any discount
- * discountedFare — the fare after the passenger discount is applied
- * chargedFare    — the final amount charged, after the daily cap is applied
- *
- * All fields are final because a FareResult should never change after creation.
- */
 public class FareResult {
 
     private final double baseFare;

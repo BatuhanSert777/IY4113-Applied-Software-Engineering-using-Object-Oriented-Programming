@@ -1,17 +1,5 @@
 import java.util.List;
 
-/**
- * Handles all rider-side menu interactions.
- * Covers: profile, journeys (add/edit/delete/import/export),
- * summary display, report export, and exit (FR6, FR8, FR11–13, FR20–21).
- *
- * Three-method structure (NTIC SRP):
- *   start()        — runs the menu loop
- *   printMenu()    — shows the options
- *   handleChoice() — calls the right private method
- *
- * All input comes through InputHelper. No Scanner calls in this class.
- */
 public class RiderMenu {
 
     private final Rider rider;
@@ -44,7 +32,6 @@ public class RiderMenu {
         this.running        = true;
     }
 
-    /** Starts the rider session and keeps the menu running until the user exits. */
     public void start() {
         System.out.println("\nWelcome, " + rider.getName() + "!");
         rider.printProfile();
@@ -90,9 +77,6 @@ public class RiderMenu {
         }
     }
 
-    // ── Private action methods ────────────────────────────────────────────────
-
-    /** Collects journey details from the user and adds a new journey. */
     private void addJourney() {
         System.out.println("\n--- Add Journey ---");
         String date  = input.readDate();
@@ -100,16 +84,13 @@ public class RiderMenu {
         int fromZone = input.readZone("From zone");
         int toZone   = input.readZone("To zone");
 
-        // Passenger type comes from the rider's profile — not asked again
         PassengerType type = rider.getPassengerType();
         System.out.println("Passenger type: " + type.getDisplayName() + " (from your profile)");
 
-        // Time band is determined automatically from the journey time and peak windows
         TimeBand band = config.determineTimeBand(time);
         System.out.println("Time band: " + band.getDisplayName()
                 + " (based on journey time and peak windows)");
 
-        // Offer the rider's default payment or let them choose another
         System.out.println("Default payment: " + rider.getDefaultPayment().getDisplayName());
         boolean useDefault = input.readYesNo("Use your default payment?");
         PaymentOption payment = useDefault ? rider.getDefaultPayment() : input.readPaymentOption();
@@ -121,7 +102,6 @@ public class RiderMenu {
         System.out.printf("Running total charged today: £%.2f%n", calculateDayTotal());
     }
 
-    /** Asks for a journey ID then lets the user enter new details. */
     private void editJourney() {
         if (journeyManager.isEmpty()) {
             System.out.println("No journeys to edit.");
@@ -139,7 +119,6 @@ public class RiderMenu {
         int fromZone = input.readZone("From zone");
         int toZone   = input.readZone("To zone");
 
-        // Passenger type and time band are auto-applied, same as addJourney
         PassengerType type = rider.getPassengerType();
         System.out.println("Passenger type: " + type.getDisplayName() + " (from your profile)");
         TimeBand band = config.determineTimeBand(time);
@@ -158,7 +137,6 @@ public class RiderMenu {
         }
     }
 
-    /** Asks for a journey ID and deletes it. */
     private void deleteJourney() {
         if (journeyManager.isEmpty()) {
             System.out.println("No journeys to delete.");
@@ -178,7 +156,6 @@ public class RiderMenu {
         }
     }
 
-    /** Asks for a CSV file path and imports journeys from it. */
     private void importFromCsv() {
         String filePath = input.readNonEmptyString(
                 "Enter CSV file path to import (e.g. data/journeys.csv): ");
@@ -186,8 +163,7 @@ public class RiderMenu {
         List<Journey> imported = csvHandler.importFromCsv(filePath);
 
         if (!imported.isEmpty()) {
-            boolean replace = input.readYesNo(
-                    "Replace current journeys with imported ones?");
+            boolean replace = input.readYesNo("Replace current journeys with imported ones?");
             if (replace) {
                 journeyManager.loadJourneys(imported);
                 System.out.println("Journeys loaded and fares recalculated.");
@@ -195,7 +171,6 @@ public class RiderMenu {
         }
     }
 
-    /** Exports current journeys to a CSV file. */
     private void exportToCsv() {
         if (journeyManager.isEmpty()) {
             System.out.println("No journeys to export.");
@@ -206,18 +181,12 @@ public class RiderMenu {
         csvHandler.exportToCsv(journeyManager.getAllJourneys(), filePath);
     }
 
-    /**
-     * Saves profile and journeys, optionally exports to CSV, then exits (FR20).
-     * Journey JSON is always saved automatically so the next session can resume.
-     * Stops the menu loop.
-     */
     private void handleExit() {
         boolean saveProfile = input.readYesNo("Save your profile before exiting?");
         if (saveProfile) {
             profileManager.saveProfile(rider);
         }
 
-        // Always save journeys to JSON so the next session can offer to resume
         if (!journeyManager.isEmpty()) {
             journeyStore.saveJourneys(journeyManager.getAllJourneys(), rider.getName());
             System.out.println("Journeys saved to session file.");
@@ -232,7 +201,6 @@ public class RiderMenu {
         running = false;
     }
 
-    /** Calculates the total amount charged across all of today's journeys. */
     private double calculateDayTotal() {
         double total = 0.0;
         for (Journey j : journeyManager.getAllJourneys()) {

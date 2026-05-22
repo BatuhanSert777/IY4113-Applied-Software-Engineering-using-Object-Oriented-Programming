@@ -1,38 +1,20 @@
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Stores all configurable fare rules for the CityRide system.
- * Loaded from config.json at startup (FR2).
- * If config.json is missing, loadDefaults() provides safe starting values (FR3).
- *
- * Fare key format: "zonesCrossed:TIMEBAND"  e.g.  "2:PEAK"  or  "3:OFF_PEAK"
- */
 public class AppConfig {
 
-    // Base fares — key = "zones:TIMEBAND", value = fare in pounds
     private Map<String, Double> baseFares;
-
-    // Daily caps — key = passenger type name (e.g. "ADULT"), value = cap in pounds
     private Map<String, Double> dailyCaps;
-
-    // Discount rates — key = passenger type name, value = rate (0.25 = 25% off)
     private Map<String, Double> discountRates;
 
-    // Two peak time windows — stored as HH:mm strings
-    // Window 1: morning peak   Window 2: evening peak
+    // Two peak windows stored as HH:mm strings
     private String peakStartTime;
     private String peakEndTime;
     private String peakStartTime2;
     private String peakEndTime2;
 
-    // Admin password for the protected admin menu
     private String adminPassword;
 
-    /**
-     * Fills in all default values based on the Part 1 dataset.
-     * Called when no config.json file is found on startup.
-     */
     public void loadDefaults() {
         baseFares = new HashMap<>();
         baseFares.put("1:PEAK",     3.00);
@@ -65,73 +47,34 @@ public class AppConfig {
         adminPassword  = "admin123";
     }
 
-    /**
-     * Returns the base fare for a given number of zones and time band.
-     * If the key is not in the map, a fallback calculation is used
-     * so the program never crashes on a missing entry.
-     */
     public double getBaseFare(int zonesCrossed, TimeBand timeBand) {
         String key = zonesCrossed + ":" + timeBand.name();
         if (baseFares.containsKey(key)) {
             return baseFares.get(key);
         }
-        // Fallback formula if the key is somehow missing
         double base = 2.50 + (zonesCrossed - 1) * 0.70;
         return timeBand == TimeBand.PEAK ? base + 0.50 : base;
     }
 
-    /** Returns the daily cap for the given passenger type. */
     public double getDailyCap(PassengerType passengerType) {
         return dailyCaps.getOrDefault(passengerType.name(), 8.00);
     }
 
-    /** Returns the discount rate for the given passenger type. */
     public double getDiscountRate(PassengerType passengerType) {
         return discountRates.getOrDefault(passengerType.name(), 0.00);
     }
 
-    /** Returns true if the entered password matches the stored admin password. */
     public boolean isAdminPasswordCorrect(String entered) {
         return adminPassword != null && adminPassword.equals(entered);
     }
 
-    // ── Getters and setters (used by AdminMenu to view and update config) ────
-
-    public Map<String, Double> getBaseFares()               { return baseFares; }
-    public void setBaseFares(Map<String, Double> baseFares) { this.baseFares = baseFares; }
-
-    public Map<String, Double> getDailyCaps()               { return dailyCaps; }
-    public void setDailyCaps(Map<String, Double> dailyCaps) { this.dailyCaps = dailyCaps; }
-
-    public Map<String, Double> getDiscountRates()                   { return discountRates; }
-    public void setDiscountRates(Map<String, Double> discountRates) { this.discountRates = discountRates; }
-
-    public String getPeakStartTime()             { return peakStartTime; }
-    public void setPeakStartTime(String time)    { this.peakStartTime = time; }
-
-    public String getPeakEndTime()               { return peakEndTime; }
-    public void setPeakEndTime(String time)      { this.peakEndTime = time; }
-
-    public String getPeakStartTime2()            { return peakStartTime2; }
-    public void setPeakStartTime2(String time)   { this.peakStartTime2 = time; }
-
-    public String getPeakEndTime2()              { return peakEndTime2; }
-    public void setPeakEndTime2(String time)     { this.peakEndTime2 = time; }
-
-    public String getAdminPassword()             { return adminPassword; }
-    public void setAdminPassword(String password){ this.adminPassword = password; }
-
-    /**
-     * Classifies a journey time as PEAK or OFF_PEAK by checking both peak windows.
-     * Converts HH:mm to minutes since midnight for comparison.
-     * Used by RiderMenu so the rider does not select the time band manually.
-     */
+    // Classifies a time string as PEAK or OFF_PEAK by checking both peak windows
     public TimeBand determineTimeBand(String time) {
-        int inputMins  = toMinutes(time);
-        int start1     = toMinutes(peakStartTime  != null ? peakStartTime  : "07:00");
-        int end1       = toMinutes(peakEndTime     != null ? peakEndTime    : "09:30");
-        int start2     = toMinutes(peakStartTime2 != null ? peakStartTime2 : "17:00");
-        int end2       = toMinutes(peakEndTime2    != null ? peakEndTime2   : "19:00");
+        int inputMins = toMinutes(time);
+        int start1    = toMinutes(peakStartTime  != null ? peakStartTime  : "07:00");
+        int end1      = toMinutes(peakEndTime     != null ? peakEndTime    : "09:30");
+        int start2    = toMinutes(peakStartTime2 != null ? peakStartTime2 : "17:00");
+        int end2      = toMinutes(peakEndTime2    != null ? peakEndTime2   : "19:00");
 
         if ((inputMins >= start1 && inputMins <= end1) ||
             (inputMins >= start2 && inputMins <= end2)) {
@@ -140,9 +83,34 @@ public class AppConfig {
         return TimeBand.OFF_PEAK;
     }
 
-    /** Converts a HH:mm string to minutes since midnight. */
     private int toMinutes(String hhmm) {
         String[] parts = hhmm.split(":");
         return Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
     }
+
+    // ── Getters and setters ──────────────────────────────────────────────────
+
+    public Map<String, Double> getBaseFares()                        { return baseFares; }
+    public void setBaseFares(Map<String, Double> baseFares)          { this.baseFares = baseFares; }
+
+    public Map<String, Double> getDailyCaps()                        { return dailyCaps; }
+    public void setDailyCaps(Map<String, Double> dailyCaps)          { this.dailyCaps = dailyCaps; }
+
+    public Map<String, Double> getDiscountRates()                    { return discountRates; }
+    public void setDiscountRates(Map<String, Double> discountRates)  { this.discountRates = discountRates; }
+
+    public String getPeakStartTime()            { return peakStartTime; }
+    public void setPeakStartTime(String time)   { this.peakStartTime = time; }
+
+    public String getPeakEndTime()              { return peakEndTime; }
+    public void setPeakEndTime(String time)     { this.peakEndTime = time; }
+
+    public String getPeakStartTime2()           { return peakStartTime2; }
+    public void setPeakStartTime2(String time)  { this.peakStartTime2 = time; }
+
+    public String getPeakEndTime2()             { return peakEndTime2; }
+    public void setPeakEndTime2(String time)    { this.peakEndTime2 = time; }
+
+    public String getAdminPassword()              { return adminPassword; }
+    public void setAdminPassword(String password) { this.adminPassword = password; }
 }

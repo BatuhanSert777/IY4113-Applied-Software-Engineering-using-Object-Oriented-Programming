@@ -1,17 +1,7 @@
-/**
- * Stores all data for one journey made by a rider.
- * Covers all fields required by FR7 of the assignment brief.
- *
- * journeyId is final — it never changes once set.
- * All other fields are not final so the rider can edit them (FR6).
- * Fare values are filled in by FareCalculator after the journey is created.
- */
 public class Journey {
 
-    // Permanent — identifies this journey throughout its life
     private final int journeyId;
 
-    // Editable fields — the rider can change these (FR6)
     private String date;
     private String time;
     private int fromZone;
@@ -20,7 +10,6 @@ public class Journey {
     private TimeBand timeBand;
     private PaymentOption paymentOption;
 
-    // Set by FareCalculator after creation
     private double baseFare;
     private double discountedFare;
     private double chargedFare;
@@ -40,26 +29,16 @@ public class Journey {
         this.paymentOption = paymentOption;
     }
 
-    /**
-     * Stores the fare values produced by FareCalculator.
-     * Called once after the journey is added or after a recalculation.
-     */
     public void setFares(FareResult result) {
         this.baseFare       = result.getBaseFare();
         this.discountedFare = result.getDiscountedFare();
         this.chargedFare    = result.getChargedFare();
     }
 
-    /**
-     * Computes zones crossed from the current fromZone and toZone values.
-     * This is a method, not a stored field, so it stays correct after any edit.
-     * Example: zone 1 to zone 3 = |3-1| + 1 = 3 zones crossed.
-     */
     public int getZonesCrossed() {
         return Math.abs(toZone - fromZone) + 1;
     }
 
-    /** Prints a summary of this journey to the console (FR7, FR11). */
     public void printSummary() {
         double discountSaving = baseFare - discountedFare;
         double capSaving      = discountedFare - chargedFare;
@@ -92,7 +71,7 @@ public class Journey {
     public double getDiscountedFare()       { return discountedFare; }
     public double getChargedFare()          { return chargedFare; }
 
-    // ── Setters (used by JourneyManager when editing a journey) ──────────────
+    // ── Setters ──────────────────────────────────────────────────────────────
 
     public void setDate(String date)                          { this.date = date; }
     public void setTime(String time)                          { this.time = time; }

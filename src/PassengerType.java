@@ -1,10 +1,3 @@
-/**
- * The four types of passenger supported by CityRide Lite.
- * Each type has a discount rate, a daily spending cap, and a display name.
- *
- * Discount rate: how much cheaper the fare is (0.25 = 25% off).
- * Daily cap: the most this passenger type will be charged in one day.
- */
 public enum PassengerType {
 
     ADULT         (0.00, 8.00, "Adult"),
@@ -26,11 +19,6 @@ public enum PassengerType {
     public double getDailyCap()     { return dailyCap; }
     public String getDisplayName()  { return displayName; }
 
-    /**
-     * Converts user text input to the correct PassengerType.
-     * Returns null if the input does not match any type.
-     * The caller should check for null and show an error message.
-     */
     public static PassengerType fromString(String input) {
         if (input == null) {
             return null;

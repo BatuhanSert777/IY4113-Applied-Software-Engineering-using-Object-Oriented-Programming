@@ -6,26 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Generates the end-of-day summary and saves it to files (FR12, FR13).
- *
- * Three things this class does:
- * 1. Print the summary to the console (FR12)
- * 2. Save a human-readable text report (FR13b)
- * 3. Save a CSV report with all journey line items (FR13a)
- *
- * All three use the same buildSummary() method so numbers are consistent.
- * Reports are saved in the reports/ folder.
- */
 public class ReportManager {
 
     private static final String REPORTS_FOLDER = "reports/";
 
-    /**
-     * Displays the end-of-day summary on screen (FR12).
-     * Shows: journey count, total charged, average, most expensive,
-     * cap savings, peak/off-peak split, and zones crossed counts.
-     */
     public void printSummary(List<Journey> journeys, String riderName) {
         if (journeys.isEmpty()) {
             System.out.println("No journeys to summarise.");
@@ -61,10 +45,6 @@ public class ReportManager {
         System.out.println("=========================================");
     }
 
-    /**
-     * Saves a human-readable text summary to the reports folder (FR13b).
-     * Returns true if saved successfully.
-     */
     public boolean saveTextReport(List<Journey> journeys, String riderName) {
         if (journeys.isEmpty()) {
             System.out.println("No journeys to export.");
@@ -111,10 +91,6 @@ public class ReportManager {
         return saved;
     }
 
-    /**
-     * Saves a CSV report with one line per journey to the reports folder (FR13a).
-     * Returns true if saved successfully.
-     */
     public boolean saveCsvReport(List<Journey> journeys, String riderName) {
         if (journeys.isEmpty()) {
             System.out.println("No journeys to export.");
@@ -150,11 +126,6 @@ public class ReportManager {
         return saved;
     }
 
-    /**
-     * Calculates all summary statistics for the given journey list.
-     * Used by printSummary, saveTextReport, and saveCsvReport
-     * so all three always show the same numbers.
-     */
     private Summary buildSummary(List<Journey> journeys) {
         Summary s = new Summary();
         s.totalJourneys = journeys.size();
@@ -188,31 +159,25 @@ public class ReportManager {
         return s;
     }
 
-    /** Builds the output file path using today's date and the rider's name. */
     private String buildReportPath(String riderName, String extension) {
         String safeName = riderName.trim().replace(" ", "_");
         String date = getTodayDateString().replace("/", "-");
         return REPORTS_FOLDER + date + "_" + safeName + "_report." + extension;
     }
 
-    /** Returns today's date formatted as dd/MM/yyyy. */
     private String getTodayDateString() {
         return LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
-    /**
-     * Private data holder used only by buildSummary().
-     * Groups all summary numbers together so they can be passed around easily.
-     */
     private static class Summary {
-        int    totalJourneys     = 0;
-        double totalCharged      = 0.0;
-        double totalWithoutCaps  = 0.0;
-        double capSavings        = 0.0;
-        double averageCost       = 0.0;
-        int    peakCount         = 0;
-        int    offPeakCount      = 0;
-        int    mostExpensiveId   = -1;
+        int    totalJourneys       = 0;
+        double totalCharged        = 0.0;
+        double totalWithoutCaps    = 0.0;
+        double capSavings          = 0.0;
+        double averageCost         = 0.0;
+        int    peakCount           = 0;
+        int    offPeakCount        = 0;
+        int    mostExpensiveId     = -1;
         double mostExpensiveCharge = -1.0;
         Map<Integer, Integer> zonesCrossedCounts = new HashMap<>();
     }

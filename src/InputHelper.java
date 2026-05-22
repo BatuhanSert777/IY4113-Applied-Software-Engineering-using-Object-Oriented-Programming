@@ -1,19 +1,8 @@
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-/**
- * Handles all user input from the console.
- * Every other class calls these methods instead of using Scanner directly.
- * This keeps input validation in one place (Single Responsibility Principle).
- *
- * NTIC rules followed:
- * - boolean keepAsking instead of while(true)
- * - single return statement per method
- * - every prompt includes format and example (FR22)
- */
 public class InputHelper {
 
-    // Regex patterns used for date and time validation
     private static final Pattern DATE_PATTERN = Pattern.compile("^\\d{2}/\\d{2}/\\d{4}$");
     private static final Pattern TIME_PATTERN = Pattern.compile("^\\d{2}:\\d{2}$");
 
@@ -23,11 +12,6 @@ public class InputHelper {
         this.scanner = scanner;
     }
 
-    /**
-     * Reads a menu choice from the user.
-     * Returns -1 if the input is not a valid number,
-     * so the menu can show an "invalid choice" message.
-     */
     public int readMenuChoice(String prompt) {
         System.out.print(prompt);
         String input = scanner.nextLine().trim();
@@ -40,10 +24,6 @@ public class InputHelper {
         return choice;
     }
 
-    /**
-     * Reads a positive whole number (e.g. a journey ID to edit or delete).
-     * Keeps asking until the user enters a number greater than zero.
-     */
     public int readPositiveInt(String prompt) {
         int result = -1;
         boolean keepAsking = true;
@@ -65,10 +45,6 @@ public class InputHelper {
         return result;
     }
 
-    /**
-     * Reads a non-negative decimal number (e.g. a fare value or discount rate).
-     * Keeps asking until the user enters a valid number.
-     */
     public double readPositiveDouble(String prompt) {
         double result = 0.0;
         boolean keepAsking = true;
@@ -90,10 +66,6 @@ public class InputHelper {
         return result;
     }
 
-    /**
-     * Reads and validates a date in dd/MM/yyyy format.
-     * Keeps asking until the format is correct.
-     */
     public String readDate() {
         String result = "";
         boolean keepAsking = true;
@@ -110,10 +82,6 @@ public class InputHelper {
         return result;
     }
 
-    /**
-     * Reads and validates a time in HH:mm format.
-     * Keeps asking until the format is correct.
-     */
     public String readTime() {
         String result = "";
         boolean keepAsking = true;
@@ -130,10 +98,6 @@ public class InputHelper {
         return result;
     }
 
-    /**
-     * Reads a zone number between 1 and 5.
-     * Keeps asking until a valid zone is entered.
-     */
     public int readZone(String prompt) {
         int result = -1;
         boolean keepAsking = true;
@@ -155,10 +119,6 @@ public class InputHelper {
         return result;
     }
 
-    /**
-     * Reads and validates a PassengerType from the user.
-     * Keeps asking until a recognised type is entered.
-     */
     public PassengerType readPassengerType() {
         PassengerType result = null;
         boolean keepAsking = true;
@@ -175,10 +135,6 @@ public class InputHelper {
         return result;
     }
 
-    /**
-     * Reads and validates a TimeBand from the user.
-     * Keeps asking until a recognised band is entered.
-     */
     public TimeBand readTimeBand() {
         TimeBand result = null;
         boolean keepAsking = true;
@@ -195,10 +151,6 @@ public class InputHelper {
         return result;
     }
 
-    /**
-     * Reads and validates a PaymentOption from the user.
-     * Keeps asking until a recognised option is entered.
-     */
     public PaymentOption readPaymentOption() {
         PaymentOption result = null;
         boolean keepAsking = true;
@@ -215,10 +167,6 @@ public class InputHelper {
         return result;
     }
 
-    /**
-     * Reads a non-empty text string (e.g. a name or file path).
-     * Keeps asking until at least one character is entered.
-     */
     public String readNonEmptyString(String prompt) {
         String result = "";
         boolean keepAsking = true;
@@ -235,18 +183,11 @@ public class InputHelper {
         return result;
     }
 
-    /**
-     * Reads a plain line of text with no validation (used for passwords).
-     */
     public String readLine(String prompt) {
         System.out.print(prompt);
         return scanner.nextLine();
     }
 
-    /**
-     * Asks a yes/no question. Returns true for yes, false for no.
-     * Keeps asking until the user enters y or n.
-     */
     public boolean readYesNo(String prompt) {
         boolean answer = false;
         boolean keepAsking = true;
